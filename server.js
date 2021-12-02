@@ -42,14 +42,14 @@ app.get("/app/users/:id", (req, res) => {
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 app.patch("/app/update/users/:id", (req, res) => {	
 	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?")
-	const res = stmt.run(req.body.user, md5(req.body.pass), req.params.id);
-	res.status(200).send({message: res.changes + " record updated: ID " + req.params.id + " (200)"});
+	const result = stmt.run(req.body.user, md5(req.body.pass), req.params.id);
+	res.status(200).send({message: result.changes + " record updated: ID " + req.params.id + " (200)"});
 });
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/update/users/:id", (req, res) => {	
 	const stmt = db.prepare("DELETE FORM userinfo WHERE id = ?")
 	const res = stmt.run(req.params.id);
-	res.status(200).send({message: res.changes + " record deleted: ID " + req.params.id + " (200)"});
+	res.status(200).send({message: result.changes + " record deleted: ID " + req.params.id + " (200)"});
 });
 // Default response for any other request
 app.use(function(req, res){
