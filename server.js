@@ -48,7 +48,7 @@ app.patch("/app/update/users/:id", (req, res) => {
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/update/users/:id", (req, res) => {	
 	const stmt = db.prepare("DELETE FORM userinfo WHERE id = ?")
-	const res = stmt.run(req.params.id);
+	const result = stmt.run(req.params.id);
 	res.status(200).send({message: result.changes + " record deleted: ID " + req.params.id + " (200)"});
 });
 // Default response for any other request
