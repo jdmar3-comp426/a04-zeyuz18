@@ -23,7 +23,11 @@ app.get("/app/", (req, res, next) => {
 
 // Define other CRUD API endpoints using express.js and better-sqlite3
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
-
+app.post("/app/new", (req, res) => {
+	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?)")
+	const parameters = stmt.run(req.body.user, md5(req.body.pass));
+	res.status(201).send({message: parameters.changes + " record created: ID " + parameters.lastInsertRowid + " (201)"})	
+})
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
 app.get("/app/users", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
@@ -31,11 +35,22 @@ app.get("/app/users", (req, res) => {
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
-
+app.get("/app/users/:id", (req, res) => {	
+	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?").get(req.params.id);
+	res.status(200).json(stmt);
+});
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
-
+app.patch("/app/update/users/:id", (req, res) => {	
+	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?")
+	const res = stmt.run(req.body.user, md5(req.body.pass), req.params.id);
+	res.status(200).send({message: res.changes + " record updated: ID " + req.params.id + " (200)"});
+});
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
-
+app.delete("/app/update/users/:id", (req, res) => {	
+	const stmt = db.prepare("DELETE FORM userinfo WHERE id = ?")
+	const res = stmt.run(req.params.id);
+	res.status(200).send({message: res.changes + " record deleted: ID " + req.params.id + " (200)"});
+});
 // Default response for any other request
 app.use(function(req, res){
 	res.json({"message":"Endpoint not found. (404)"});
